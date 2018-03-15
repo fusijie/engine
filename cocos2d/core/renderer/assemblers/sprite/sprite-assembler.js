@@ -112,6 +112,7 @@ let spriteAssembler = js.addon({
             }    
         }
         renderData.effect = sprite.getEffect();
+        renderData.effectHash = sprite.getEffectHash();
         this.datas.length = 0;
         this.datas.push(renderData);
         return this.datas;

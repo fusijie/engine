@@ -91,6 +91,15 @@ var RenderComponent = cc.Class({
             return null;
         }
     },
+
+    getEffectHash () {
+        if (this._material) {
+            return this._material.hash;
+        }
+        else {
+            return "";
+        }
+    }
 });
 RenderComponent._assembler = null;
 RenderComponent._postAssembler = null;

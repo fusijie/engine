@@ -53,6 +53,7 @@ var labelAssembler = js.addon({
             assembler.update(comp);
 
             renderData.effect = comp.getEffect();
+            renderData.effectHash = comp.getEffectHash();
             this.datas.push(renderData);
         }
         return this.datas;
