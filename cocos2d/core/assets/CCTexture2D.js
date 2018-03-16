@@ -33,6 +33,7 @@ const renderEngine = require('../renderer/render-engine');
 const renderer = require('../renderer');
 require('../platform/CCClass');
 
+const TextureAsset = renderEngine.TextureAsset;
 const gfx = renderEngine.gfx;
 
 const GL_NEAREST = 9728;                // gl.NEAREST
@@ -242,6 +243,7 @@ var Texture2D = cc.Class({
     },
 
     ctor () {
+        this.__instanceId = cc.ClassManager.getNewInstanceId();
         /**
          * !#en
          * The url of the texture, this could be empty if the texture wasn't created via a file.
@@ -284,8 +286,17 @@ var Texture2D = cc.Class({
         this._texture = null;
     },
 
+    /**
+     * Get renderer texture implementation object
+     * extended from renderEngine.TextureAsset
+     * @method getImpl
+     */
     getImpl () {
         return this._texture;
+    },
+
+    getId () {
+        return this.__instanceId;
     },
 
     /**
