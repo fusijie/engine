@@ -53,8 +53,7 @@ let tmxAssembler = js.addon({
         let size = comp.node._contentSize;
         let anchor = comp.node._anchorPoint;
         renderData.updateSizeNPivot(size.width, size.height, anchor.x, anchor.y);
-        renderData.effect = comp.getEffect();
-        renderData.effectHash = comp.getEffectHash();
+        renderData.material = comp.getMaterial();
         
         this.updateVertices(comp);
 

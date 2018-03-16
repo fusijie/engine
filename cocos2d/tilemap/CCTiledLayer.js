@@ -619,7 +619,7 @@ let TiledLayer = cc.Class({
         // Get material
         material = new SpriteMaterial();
         // TODO: old texture in material have been released by loader
-        material.texture = texture.getImpl();
+        material.texture = texture;
         
         this._material = material;
     },

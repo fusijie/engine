@@ -497,7 +497,7 @@ var Sprite = cc.Class({
                 this._material = new SpriteMaterial();
             }
             // TODO: old texture in material have been released by loader
-            this._material.texture = texture.getImpl();
+            this._material.texture = texture;
         }
 
         if (this.srcBlendFactor !== gfx.BLEND_SRC_ALPHA || this.dstBlendFactor !== gfx.BLEND_ONE_MINUS_SRC_ALPHA) {

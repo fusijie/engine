@@ -13604,8 +13604,6 @@ class ForwardRenderer extends renderer.Base {
   render (scene) {
     this._reset();
 
-    const canvas = this._device._gl.canvas;
-
     scene._cameras.sort((a, b) => {
       if (a._depth > b._depth) return 1;
       else if (a._depth < b._depth) return -1;
@@ -13614,17 +13612,29 @@ class ForwardRenderer extends renderer.Base {
 
     for (let i = 0; i < scene._cameras.length; ++i) {
       let camera = scene._cameras.data[i];
-      let view = camera.view;
-      let dirty = camera.dirty;
-      if (!view) {
-        view = this._requestView();
-        dirty = true;
-      }
-      if (dirty) {
-        camera.extractView(view, canvas.width, canvas.height);
-      }
-      this._render(view, scene);
+      this.renderCamera(camera, scene);
     }
+  }
+
+  renderCamera (camera, scene) {
+    const canvas = this._device._gl.canvas;
+
+    let view = camera.view;
+    let dirty = camera.dirty;
+    if (!view) {
+      view = this._requestView();
+      dirty = true;
+    }
+    if (dirty) {
+      let width = canvas.width;
+      let height = canvas.height;
+      if (camera._framebuffer) {
+        width = camera._framebuffer._width;
+        height = camera._framebuffer._height;
+      }
+      camera.extractView(view, width, height);
+    }
+    this._render(view, scene);
   }
 
   _transparentStage (view, items) {
@@ -13706,7 +13716,7 @@ let shaders = {
  */
 class BaseRenderData {
     constructor () {
-        this.effect = null;
+        this.material = null;
         this.vertexCount = 0;
         this.indiceCount = 0;
     }
@@ -13795,7 +13805,7 @@ class RenderData extends BaseRenderData {
       }
       data._data.length = 0;
       data._indices.length = 0;
-      data.effect = null;
+      data.material = null;
       data.uvDirty = true;
       data.vertDirty = true;
       data.vertexCount = 0;
@@ -14348,6 +14358,26 @@ class Asset {
 }
 
 // Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.  
+ 
+class Texture$1 extends Asset {
+  constructor(persist = true) {
+    super(persist);
+
+    this._texture = null;
+  }
+
+  getImpl () {
+    return this._texture;
+  }
+
+  getId () {}
+
+  destroy () {
+    this._texture && this._texture.destroy();
+  }
+}
+
+// Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.  
 
 class MD5 {
     constructor() {
@@ -14782,8 +14812,8 @@ class SpriteMaterial extends Material {
   }
 
   set texture(val) {
-    this._effect.setProperty('texture', val);
-    this._textureInstanceId = val._instanceId;
+    this._effect.setProperty('texture', val.getImpl());
+    this._textureInstanceId = val.getId();
     this.updateHash();
   }
 
@@ -14846,8 +14876,8 @@ class GraySpriteMaterial extends Material {
   }
 
   set texture (val) {
-    this._effect.setProperty('texture', val);
-    this._textureInstanceId = val._instanceId;
+    this._effect.setProperty('texture', val.getImpl());
+    this._textureInstanceId = val.getId();
     this.updateHash();
   }
 
@@ -14921,8 +14951,8 @@ class StencilMaterial extends Material {
   }
 
   set texture (val) {
-    this._effect.setProperty('texture', val);
-    this._textureInstanceId = val._instanceId;
+    this._effect.setProperty('texture', val.getImpl());
+    this._textureInstanceId = val.getId();
     this.updateHash();
   }
   
@@ -15003,8 +15033,8 @@ class ParticleMaterial extends Material {
   }
 
   set texture (val) {
-    this._effect.setProperty('texture', val);
-    this._textureInstanceId = val._instanceId;
+    this._effect.setProperty('texture', val.getImpl());
+    this._textureInstanceId = val.getId();
     this.updateHash();
   }
 
@@ -15264,6 +15294,7 @@ let renderEngine = {
   
   // assets
   Asset,
+  TextureAsset: Texture$1,
   Material,
   
   // materials
